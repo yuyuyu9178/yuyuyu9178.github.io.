@@ -1,0 +1,605 @@
+html
+
+
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>不会写代码，也能有自己的网页 · Z.G.</title>
+<meta name="description" content="一个零基础学生的个人网页：我是谁、我卡在哪、我怎么绕过去。附一个填几个空就能生成网页的小工具。">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#f7f5f0">
+<style>
+  :root{
+    --paper:#f7f5f0;
+    --card:#fffdf8;
+    --ink:#1a1b19;
+    --muted:#5d615a;
+    --line:#dcd8cc;
+    --accent:#2c5b4f;
+    --accent-soft:#e8eee9;
+    --mono:ui-monospace,"Cascadia Mono",Consolas,"SF Mono",monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"PingFang SC","Microsoft YaHei UI","Microsoft YaHei",system-ui,-apple-system,"Segoe UI",sans-serif;
+    font-size:17px;
+    line-height:1.9;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:0;
+    background:
+      radial-gradient(900px 520px at 8% -12%,rgba(44,91,79,.075),transparent 62%),
+      radial-gradient(760px 420px at 102% 2%,rgba(176,146,86,.07),transparent 58%);
+  }
+  .page{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:64px 26px 92px}
+
+  .kicker{
+    margin:0 0 18px;
+    font-size:12.5px;
+    font-weight:600;
+    letter-spacing:.22em;
+    color:var(--accent);
+  }
+  h1{
+    margin:0;
+    font-size:clamp(27px,5.4vw,42px);
+    line-height:1.32;
+    letter-spacing:-.01em;
+    font-weight:700;
+  }
+  .lede{margin:18px 0 0;font-size:17.5px;color:var(--muted);max-width:33em}
+  .byline{
+    margin:26px 0 0;
+    padding-top:16px;
+    border-top:1px solid var(--line);
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+    font-size:13px;
+    letter-spacing:.1em;
+    color:var(--muted);
+  }
+
+  .block{
+    border-top:1px solid var(--line);
+    margin-top:34px;
+    padding-top:26px;
+    display:grid;
+    grid-template-columns:40px 1fr;
+    column-gap:18px;
+  }
+  .num{
+    grid-row:span 2;
+    margin:0;
+    padding-top:7px;
+    font-family:var(--mono);
+    font-size:12.5px;
+    letter-spacing:.12em;
+    color:var(--accent);
+  }
+  .block h2{
+    margin:0 0 10px;
+    font-size:22px;
+    font-weight:600;
+    letter-spacing:-.005em;
+    line-height:1.5;
+  }
+  .block p{margin:0 0 .55em;color:#2b2d29}
+  .block p:last-child{margin-bottom:0}
+
+  .facts{margin:2px 0 0;display:grid;grid-template-columns:5.2em 1fr;gap:6px 14px;font-size:16px}
+  .facts dt{color:var(--muted);font-size:14px;letter-spacing:.06em;padding-top:2px}
+  .facts dd{margin:0;color:#2b2d29}
+
+  .plan{list-style:none;margin:12px 0 0;padding:0;border-left:1px solid var(--line)}
+  .plan li{position:relative;padding:0 0 18px 22px;color:#2b2d29;font-size:16px}
+  .plan li:last-child{padding-bottom:0}
+  .plan li::before{
+    content:"";
+    position:absolute;
+    left:-4px;
+    top:11px;
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--accent);
+  }
+  .plan .when{
+    display:inline-block;
+    margin-right:8px;
+    font-family:var(--mono);
+    font-size:12.5px;
+    letter-spacing:.04em;
+    color:var(--accent);
+  }
+  .closing{margin:16px 0 0;font-size:16px;color:var(--muted)}
+
+  .note{
+    margin:32px 0 0;
+    padding:15px 18px;
+    border-left:3px solid var(--accent);
+    border-radius:0 8px 8px 0;
+    background:var(--accent-soft);
+    font-size:15px;
+    line-height:1.85;
+    color:#22423a;
+  }
+  .note b{font-weight:600}
+
+  .tool{
+    margin-top:52px;
+    padding:26px 24px 24px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:var(--card);
+    box-shadow:0 18px 40px -32px rgba(30,40,35,.5);
+  }
+  .tool h2{margin:0 0 8px;font-size:24px;line-height:1.4;font-weight:600}
+  .tool-intro{margin:0 0 22px;font-size:15.5px;color:var(--muted)}
+  .tool-intro code{font-family:var(--mono);font-size:.9em;background:#f0eee6;padding:1px 5px;border-radius:4px}
+
+  .field{margin:0 0 16px;min-width:0}
+  .field label{display:block;margin-bottom:6px;font-size:12.5px;letter-spacing:.1em;color:var(--muted)}
+  .field input,.field textarea{
+    width:100%;
+    min-width:0;
+    font:inherit;
+    font-size:15px;
+    line-height:1.75;
+    color:var(--ink);
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px 12px;
+  }
+  .field textarea{min-height:78px;resize:vertical}
+  .field input:focus,.field textarea:focus{border-color:var(--accent);outline:2px solid rgba(44,91,79,.25);outline-offset:1px}
+  .row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+
+  .actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:18px 0 6px}
+  button{
+    font:inherit;
+    font-size:14.5px;
+    cursor:pointer;
+    border-radius:9px;
+    padding:10px 18px;
+    border:1px solid transparent;
+    transition:background .15s ease,border-color .15s ease,color .15s ease,transform .08s ease;
+  }
+  button:active{transform:translateY(1px)}
+  .btn-primary{background:var(--accent);color:#fdfcf7}
+  .btn-primary:hover{background:#245046}
+  .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+  .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+  .status{margin:0;font-size:13px;color:var(--accent);min-height:1.4em}
+
+  .preview-label{
+    margin:22px 0 8px;
+    font-size:12.5px;
+    letter-spacing:.1em;
+    color:var(--muted);
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .preview-label span:last-child{letter-spacing:0;opacity:.7}
+  .frame-wrap{
+    position:relative;
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+    background:#fff;
+  }
+  .frame-wrap::after{
+    content:"";
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    height:38px;
+    pointer-events:none;
+    background:linear-gradient(rgba(255,255,255,0),#fff 85%);
+  }
+  iframe{
+    width:100%;
+    height:430px;
+    display:block;
+    border:0;
+    background:#fff;
+  }
+
+  details{
+    margin-top:18px;
+    padding:14px 18px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:rgba(255,255,255,.55);
+  }
+  summary{
+    cursor:pointer;
+    list-style:none;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    font-size:15px;
+    font-weight:600;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"＋";color:var(--accent);font-weight:400}
+  details[open] summary::after{content:"－"}
+  details pre{
+    margin:14px 0 0;
+    padding:14px;
+    max-height:280px;
+    overflow:auto;
+    border-radius:8px;
+    background:#1e2320;
+    color:#dbe6df;
+    font-family:var(--mono);
+    font-size:12.5px;
+    line-height:1.7;
+    white-space:pre;
+  }
+  details ol{margin:14px 0 0;padding-left:1.35em;font-size:15.5px;line-height:1.9;color:var(--muted)}
+  details ol li{margin-bottom:4px}
+  details ol code{font-family:var(--mono);font-size:.88em;background:#f0eee6;padding:1px 5px;border-radius:4px;color:#2b2d29}
+
+  footer{
+    margin-top:60px;
+    padding-top:18px;
+    border-top:1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
+    gap:14px;
+    flex-wrap:wrap;
+    font-size:12.5px;
+    letter-spacing:.06em;
+    color:var(--muted);
+  }
+
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+  @media (max-width:560px){
+    .page{padding:44px 20px 72px}
+    .block{grid-template-columns:1fr;column-gap:0}
+    .num{grid-row:auto;margin-bottom:6px;font-size:13px}
+    .facts{grid-template-columns:1fr}
+    .facts dt{padding-top:6px}
+    .row{grid-template-columns:1fr;gap:0}
+    iframe{height:380px}
+  }
+  @media print{
+    body::before{display:none}
+    .tool,.note{break-inside:avoid}
+    iframe{height:420px}
+  }
+</style>
+</head>
+<body>
+<main class="page">
+
+  <header>
+    <p class="kicker">个人网页 · 说清一个课题</p>
+    <h1>不会写代码，<br>也能有自己的网页</h1>
+    <p class="lede">三句话：我是谁、我卡在哪、我怎么绕过去。剩下的，交给下面那个框。</p>
+    <p class="byline"><span>Z.G.</span><span>2026.10</span><span>单文件 · 无依赖</span></p>
+  </header>
+
+  <section class="block" id="who">
+    <p class="num">01</p>
+    <h2>你是谁</h2>
+    <div>
+      <p>Z.G.，一个想有个自己网页、却没写过一行前端代码的人。</p>
+      <p>不是没试过。每次打开教程，第一句就是「先装个 Node」，我就把页面关掉了。</p>
+    </div>
+  </section>
+
+  <section class="block" id="pain">
+    <p class="num">02</p>
+    <h2>吐槽什么问题</h2>
+    <div>
+      <dl class="facts">
+        <dt>谁</dt>
+        <dd>所有被「做个网页」这四个字卡住的人：社团要招新页、课程要交作业、想给自己留个主页。</dd>
+        <dt>什么时候</dt>
+        <dd>交作业的前一晚；或者终于下定决心「这次一定」的那个周末下午。</dd>
+        <dt>多不方便</dt>
+        <dd>装环境、学标签、调居中，两个小时过去，屏幕上还是白的。最后要么放弃，要么交一个丑到自己都不想转发的页面。</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section class="block" id="plan">
+    <p class="num">03</p>
+    <h2>我打算怎么解决</h2>
+    <div>
+      <p>不学手搓，改成填空：一个文件、几个空，填完就有一个能直接打开的网页。</p>
+      <ol class="plan">
+        <li><span class="when">今晚 · 1 小时</span>用 AI 生成骨架，我只负责把三句话填进去。</li>
+        <li><span class="when">明天 · 30 分钟</span>换成自己的配色，把用不上的部分删掉。</li>
+        <li><span class="when">后天 · 30 分钟</span>传到免费托管，拿到一个能直接发出去的链接。</li>
+      </ol>
+      <p class="closing">总共 3 天，每天不到 1 小时。丑没关系，能打开就算赢。</p>
+    </div>
+  </section>
+
+  <p class="note">
+    <b>红线：</b>网页是公开的，所以这里只写姓名缩写，不写真实姓名和宿舍号。抱怨原话、AI 对话原文、被否掉的方案，一律留在记录表里，不上网页。
+  </p>
+
+  <section class="tool" aria-labelledby="tool-title">
+    <p class="kicker">现场试一试</p>
+    <h2 id="tool-title">它就是方案本身</h2>
+    <p class="tool-intro">改改下面几个空，下面立刻长出一个新网页。满意就下载成 <code>index.html</code>，双击能打开，也能直接传上网。</p>
+
+    <div class="row">
+      <div class="field">
+        <label for="f-name">署名（只写缩写）</label>
+        <input id="f-name" type="text" autocomplete="off" spellcheck="false" value="Z.G.">
+      </div>
+      <div class="field">
+        <label for="f-title">标题</label>
+        <input id="f-title" type="text" autocomplete="off" value="不会写代码，也能有自己的网页">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="f-who">01 · 你是谁</label>
+      <textarea id="f-who" spellcheck="false">Z.G.，一个想有个自己网页、却没写过一行前端代码的人。
+不是没试过。每次打开教程，第一句就是「先装个 Node」，我就把页面关掉了。</textarea>
+    </div>
+
+    <div class="field">
+      <label for="f-why">02 · 吐槽什么问题（谁 · 什么时候 · 多不方便）</label>
+      <textarea id="f-why" spellcheck="false">谁：所有被「做个网页」这四个字卡住的人。
+什么时候：交作业的前一晚，或者终于下定决心「这次一定」的那个周末下午。
+多不方便：装环境、学标签、调居中，两个小时过去，屏幕上还是白的。</textarea>
+    </div>
+
+    <div class="field">
+      <label for="f-how">03 · 我打算怎么解决（含时间）</label>
+      <textarea id="f-how" spellcheck="false">不学手搓，改成填空：一个文件、几个空，填完就有网页。
+今晚 1 小时：用 AI 生成骨架，我只填三句话。
+明天 30 分钟：换配色、删多余部分。
+后天 30 分钟：传到免费托管，拿到能发出去的链接。</textarea>
+    </div>
+
+    <div class="actions">
+      <button id="btn-copy" class="btn-primary" type="button">复制网页代码</button>
+      <button id="btn-download" class="btn-ghost" type="button">下载 index.html</button>
+      <button id="btn-open" class="btn-ghost" type="button">新标签页打开</button>
+    </div>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+
+    <p class="preview-label"><span>实时预览</span><span>就是你下载到的那一页 · 框内可滚动</span></p>
+    <div class="frame-wrap">
+      <iframe id="preview" title="生成网页的实时预览"></iframe>
+    </div>
+
+    <details>
+      <summary>看看生成的代码</summary>
+      <pre id="code" tabindex="0"></pre>
+    </details>
+  </section>
+
+  <details class="publish">
+    <summary>怎么把它放到网上（3 步，免费）</summary>
+    <ol>
+      <li>注册 GitHub，新建一个仓库，名字叫 <code>你的名字.github.io</code>。</li>
+      <li>把下载的 <code>index.html</code> 传上去，放在根目录。</li>
+      <li>等一两分钟，打开 <code>https://你的名字.github.io</code>，链接就能发了。</li>
+    </ol>
+    <p style="margin:12px 0 0;font-size:15px;color:var(--muted)">不想碰 Git：把整个文件夹拖进 Netlify Drop，也能立刻拿到一个网址。</p>
+  </details>
+
+  <footer>
+    <span>Z.G. · 2026.10</span>
+    <span>这一页只有一个 HTML 文件，没有框架，没有依赖，离线也能打开。</span>
+  </footer>
+</main>
+
+<noscript>
+  <p style="max-width:760px;margin:0 auto;padding:0 26px 40px;font-size:15px;color:#5d615a">下面那个填空框需要浏览器允许运行 JavaScript；上面的正文不受影响。</p>
+</noscript>
+
+<script>
+(function () {
+  "use strict";
+
+  var $ = function (id) { return document.getElementById(id); };
+
+  var escMap = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return escMap[c]; });
+  }
+
+  function paras(text) {
+    var lines = String(text || "").split(/\r?\n/).map(function (t) { return t.trim(); }).filter(Boolean);
+    if (!lines.length) return '      <p class="empty">（还没填）</p>';
+    return lines.map(function (t) { return "      <p>" + esc(t) + "</p>"; }).join("\n");
+  }
+
+  function buildDoc(d) {
+    var name = esc((d.name || "").trim() || "Z.G.");
+    var title = esc((d.title || "").trim() || "我的个人网页");
+
+    return [
+      '<!doctype html>',
+      '<html lang="zh-CN">',
+      '<head>',
+      '<meta charset="utf-8">',
+      '<meta name="viewport" content="width=device-width,initial-scale=1">',
+      '<title>' + title + ' · ' + name + '</title>',
+      '<style>',
+      '  :root{--paper:#f7f5f0;--ink:#1a1b19;--muted:#5d615a;--line:#dcd8cc;--accent:#2c5b4f}',
+      '  *{box-sizing:border-box}',
+      '  body{margin:0;background:var(--paper);color:var(--ink);font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;font-size:16.5px;line-height:1.9}',
+      '  .wrap{max-width:640px;margin:0 auto;padding:56px 24px 72px}',
+      '  .kicker{margin:0 0 14px;font-size:12px;letter-spacing:.2em;color:var(--accent);font-weight:600}',
+      '  h1{margin:0 0 10px;font-size:30px;line-height:1.4;letter-spacing:-.01em}',
+      '  .meta{margin:0;padding-bottom:24px;border-bottom:1px solid var(--line);font-size:13px;letter-spacing:.08em;color:var(--muted)}',
+      '  section{display:grid;grid-template-columns:34px 1fr;column-gap:16px;margin-top:28px;padding-top:26px;border-top:1px solid var(--line)}',
+      '  section:first-of-type{margin-top:34px;border-top:none;padding-top:0}',
+      '  .num{color:var(--accent);font-family:ui-monospace,Consolas,monospace;font-size:12.5px;letter-spacing:.1em;padding-top:6px}',
+      '  h2{margin:0 0 8px;font-size:19px;font-weight:600;line-height:1.5}',
+      '  p{margin:0 0 .6em;color:#2b2d29}',
+      '  .empty{color:#9a9d95}',
+      '  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}',
+      '</style>',
+      '</head>',
+      '<body>',
+      '<div class="wrap">',
+      '  <p class="kicker">个人网页 · 一个课题</p>',
+      '  <h1>' + title + '</h1>',
+      '  <p class="meta">' + name + '</p>',
+      '',
+      '  <section>',
+      '    <div class="num">01</div>',
+      '    <div>',
+      '      <h2>你是谁</h2>',
+      paras(d.who),
+      '    </div>',
+      '  </section>',
+      '',
+      '  <section>',
+      '    <div class="num">02</div>',
+      '    <div>',
+      '      <h2>吐槽什么问题</h2>',
+      paras(d.why),
+      '    </div>',
+      '  </section>',
+      '',
+      '  <section>',
+      '    <div class="num">03</div>',
+      '    <div>',
+      '      <h2>我打算怎么解决</h2>',
+      paras(d.how),
+      '    </div>',
+      '  </section>',
+      '',
+      '  <footer>' + name + ' · 公开版，只写姓名缩写，不含抱怨原话与被否掉的方案。</footer>',
+      '</div>',
+      '</body>',
+      '</html>'
+    ].join("\n");
+  }
+
+  function read() {
+    return {
+      name: $("f-name").value,
+      title: $("f-title").value,
+      who: $("f-who").value,
+      why: $("f-why").value,
+      how: $("f-how").value
+    };
+  }
+
+  var frame = $("preview");
+  var code = $("code");
+  var status = $("status");
+  var timer = 0;
+
+  function currentDoc() {
+    return buildDoc(read());
+  }
+
+  function render() {
+    var doc = currentDoc();
+    frame.srcdoc = doc;
+    code.textContent = doc;
+  }
+
+  function schedule() {
+    window.clearTimeout(timer);
+    timer = window.setTimeout(render, 180);
+  }
+
+  function say(msg) {
+    status.textContent = msg;
+    window.setTimeout(function () {
+      if (status.textContent === msg) status.textContent = "";
+    }, 3200);
+  }
+
+  function download() {
+    var blob = new Blob([currentDoc()], { type: "text/html;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "index.html";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+    say("已下载 index.html，双击就能打开。");
+  }
+
+  function copy() {
+    var text = currentDoc();
+    function done() { say("代码已复制，粘到文件里存成 index.html 即可。"); }
+    function fail() { say("复制被浏览器拦了，请用「下载 index.html」。"); }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else {
+      fallback();
+    }
+
+    function fallback() {
+      try {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.top = "-1000px";
+        document.body.appendChild(ta);
+        ta.select();
+        var ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        ok ? done() : fail();
+      } catch (e) {
+        fail();
+      }
+    }
+  }
+
+  function openTab() {
+    var url = URL.createObjectURL(new Blob([currentDoc()], { type: "text/html;charset=utf-8" }));
+    window.open(url, "_blank", "noopener");
+    window.setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+  }
+
+  ["f-name", "f-title", "f-who", "f-why", "f-how"].forEach(function (id) {
+    $(id).addEventListener("input", schedule);
+  });
+
+  function autosize(el) {
+    el.style.height = "auto";
+    el.style.height = Math.max(78, el.scrollHeight + 2) + "px";
+  }
+
+  [$("f-who"), $("f-why"), $("f-how")].forEach(function (el) {
+    autosize(el);
+    el.addEventListener("input", function () { autosize(el); });
+  });
+
+  $("btn-copy").addEventListener("click", copy);
+  $("btn-download").addEventListener("click", download);
+  $("btn-open").addEventListener("click", openTab);
+
+  render();
+})();
+</script>
+</body>
+</html>
